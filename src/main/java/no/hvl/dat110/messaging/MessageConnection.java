@@ -6,7 +6,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import no.hvl.dat110.TODO;
 
 
 public class MessageConnection {
@@ -32,35 +31,26 @@ public class MessageConnection {
 		}
 	}
 
-	public void send(Message message) {
+	// encapsulate the data contained in the Message and write to the output stream
+	public void send(Message message) throws IOException {
 
-		byte[] data;
+		if (message == null) {
+			throw new IllegalArgumentException();
+		}
 		
-		// TODO - START
-		// encapsulate the data contained in the Message and write to the output stream
+		outStream.write(MessageUtils.encapsulate(message));
+		outStream.flush();
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
-			
-		// TODO - END
-
+		// byte[] data = message.getData();
 	}
 
-	public Message receive() {
+	// read a segment from the input stream and decapsulate data into a Message
+	public Message receive() throws IOException {
+		
+		byte[] data = new byte[MessageUtils.SEGMENTSIZE];
+		inStream.readFully(data);
 
-		Message message = null;
-		byte[] data;
-		
-		// TODO - START
-		// read a segment from the input stream and decapsulate data into a Message
-		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - END
-		
-		return message;
-		
+		return MessageUtils.decapsulate(data);		
 	}
 
 	// close the connection by closing streams and the underlying socket	

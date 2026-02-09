@@ -1,6 +1,8 @@
 package no.hvl.dat110.rpc;
 
-import no.hvl.dat110.TODO;
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import no.hvl.dat110.messaging.*;
 
 public class RPCClient {
@@ -16,26 +18,16 @@ public class RPCClient {
 		msgclient = new MessagingClient(server,port);
 	}
 	
-	public void connect() {
+	// connect using the RPC client
+	public void connect() throws UnknownHostException, IOException {
 		
-		// TODO - START
-		// connect using the RPC client
-		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - END
+		connection = msgclient.connect();
 	}
 	
+	// disconnect by closing the underlying messaging connection
 	public void disconnect() {
 		
-		// TODO - START
-		// disconnect by closing the underlying messaging connection
-		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - END
+		connection.close();
 	}
 
 	/*
@@ -45,22 +37,13 @@ public class RPCClient {
 	 param is the marshalled parameter of the method to be called
 	 */
 
-	public byte[] call(byte rpcid, byte[] param) {
+	public byte[] call(byte rpcid, byte[] param) throws IOException {
 		
-		byte[] returnval = null;
-		
-		// TODO - START
-
-		/*
-
-		The rpcid and param must be encapsulated according to the RPC message format
-
-		The return value from the RPC call must be decapsulated according to the RPC message format
-
-		*/
-				
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		byte[] rpcmsg = RPCUtils.encapsulate(rpcid, param);
+		Message msgSend = new Message(rpcmsg);
+		connection.send(msgSend);
+		Message msgReceive = connection.receive();
+		byte[] returnval = RPCUtils.decapsulate(msgReceive.getData());
 		
 		// TODO - END
 		return returnval;

@@ -2,8 +2,6 @@ package no.hvl.dat110.messaging;
 
 import java.util.Arrays;
 
-import no.hvl.dat110.TODO;
-
 public class MessageUtils {
 
 	public static final int SEGMENTSIZE = 128;
@@ -11,38 +9,38 @@ public class MessageUtils {
 	public static int MESSAGINGPORT = 8080;
 	public static String MESSAGINGHOST = "localhost";
 
+	// encapulate/encode the payload data of the message and form a segment
+	// according to the segment format for the messaging layer
 	public static byte[] encapsulate(Message message) {
 		
-		byte[] segment = null;
-		byte[] data;
+		if (message == null) {
+			throw new IllegalArgumentException();
+		}
+
+		byte[] segment = new byte[SEGMENTSIZE];
+		byte[] data = message.getData();
 		
-		// TODO - START
+		byte length = (byte) data.length;
+		segment[0] = length;
+		for(int i=0; i<length; i++) {
+			segment[i + 1] = data[i];
+		}
 		
-		// encapulate/encode the payload data of the message and form a segment
-		// according to the segment format for the messaging layer
-		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
-			
-		// TODO - END
 		return segment;
-		
 	}
 
+	// decapsulate segment and put received payload data into a message
 	public static Message decapsulate(byte[] segment) {
 
-		Message message = null;
+		if (segment.length != SEGMENTSIZE) {
+			throw new IllegalArgumentException();
+		}
 		
-		// TODO - START
-		// decapsulate segment and put received payload data into a message
-		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
-		
-		// TODO - END
+		int length = Byte.toUnsignedInt(segment[0]);
+		byte[] data = Arrays.copyOfRange(segment, 1, length + 1);
+		Message message = new Message(data);
 		
 		return message;
-		
 	}
 	
 }

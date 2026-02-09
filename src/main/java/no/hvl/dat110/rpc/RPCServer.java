@@ -1,8 +1,8 @@
 package no.hvl.dat110.rpc;
 
+import java.io.IOException;
 import java.util.HashMap;
 
-import no.hvl.dat110.TODO;
 import no.hvl.dat110.messaging.MessageConnection;
 import no.hvl.dat110.messaging.Message;
 import no.hvl.dat110.messaging.MessagingServer;
@@ -23,7 +23,9 @@ public class RPCServer {
 		
 	}
 	
-	public void run() {
+
+	
+	public void run() throws IOException {
 		
 		// the stop RPC method is built into the server
 		RPCRemoteImpl rpcstop = new RPCServerStopImpl(RPCCommon.RPIDSTOP,this);
@@ -36,29 +38,36 @@ public class RPCServer {
 		
 		boolean stop = false;
 		
-		while (!stop) {
-	    
-		   byte rpcid = 0;
-		   Message requestmsg, replymsg;
-		   
-		   // TODO - START
-		   // - receive a Message containing an RPC request
-		   // - extract the identifier for the RPC method to be invoked from the RPC request
-		   // - extract the method's parameter by decapsulating using the RPCUtils
-		   // - lookup the method to be invoked
-		   // - invoke the method and pass the param
-		   // - encapsulate return value 
-		   // - send back the message containing the RPC reply
+		while (!stop) {			
 			
-		   if (true)
-				throw new UnsupportedOperationException(TODO.method());
+		    // - receive a Message containing an RPC request
+			Message requestmsg = connection.receive();
+			byte[] rpcmsg = requestmsg.getData();
+			
+		    // - extract the identifier for the RPC method to be invoked from the RPC request
+			byte rpcid = rpcmsg[0];
 		   
-		   // TODO - END
+		    // - extract the method's parameter by decapsulating using the RPCUtils
+			byte[] param = RPCUtils.decapsulate(rpcmsg);
+
+			
+		    // - lookup the method to be invoked
+			RPCRemoteImpl service = services.get(rpcid);
+			
+		    // - invoke the method and pass the param
+			byte[] result = service.invoke(param);
+			
+		    // - encapsulate return value 
+			byte[] replyrpc = RPCUtils.encapsulate(rpcid, result);
+			
+		    // - send back the message containing the RPC reply
+			Message replymsg = new Message(replyrpc);
+			connection.send(replymsg);
 
 			// stop the server if it was stop methods that was called
-		   if (rpcid == RPCCommon.RPIDSTOP) {
-			   stop = true;
-		   }
+			if (rpcid == RPCCommon.RPIDSTOP) {
+				stop = true;
+			}
 		}
 	
 	}
